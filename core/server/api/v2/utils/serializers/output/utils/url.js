@@ -16,10 +16,6 @@ const forPost = (id, attrs, options) => {
         attrs.twitter_image = urlService.utils.urlFor('image', {image: attrs.twitter_image}, true);
     }
 
-    if (attrs.canonical_url) {
-        attrs.canonical_url = urlService.utils.relativeToAbsolute(attrs.canonical_url);
-    }
-
     if (attrs.html) {
         const urlOptions = {
             assetsOnly: true
@@ -44,10 +40,8 @@ const forPost = (id, attrs, options) => {
     return attrs;
 };
 
-const forUser = (id, attrs, options) => {
-    if (!options.columns || (options.columns && options.columns.includes('url'))) {
-        attrs.url = urlService.getUrlByResourceId(id, {absolute: true});
-    }
+const forUser = (id, attrs) => {
+    attrs.url = urlService.getUrlByResourceId(id, {absolute: true});
 
     if (attrs.profile_image) {
         attrs.profile_image = urlService.utils.urlFor('image', {image: attrs.profile_image}, true);
@@ -60,10 +54,8 @@ const forUser = (id, attrs, options) => {
     return attrs;
 };
 
-const forTag = (id, attrs, options) => {
-    if (!options.columns || (options.columns && options.columns.includes('url'))) {
-        attrs.url = urlService.getUrlByResourceId(id, {absolute: true});
-    }
+const forTag = (id, attrs) => {
+    attrs.url = urlService.getUrlByResourceId(id, {absolute: true});
 
     if (attrs.feature_image) {
         attrs.feature_image = urlService.utils.urlFor('image', {image: attrs.feature_image}, true);

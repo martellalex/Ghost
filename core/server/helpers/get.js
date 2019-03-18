@@ -17,13 +17,13 @@ var proxy = require('./proxy'),
 
 /**
  * v0.1: users, posts, tags
- * v2: authors, pagesPublic, posts, tagsPublic
+ * v2: authors, pages, posts, tagsPublic
  *
  * @NOTE: if you use "users" in v2, we should fallback to authors
  */
 const RESOURCES = {
     posts: {
-        alias: 'postsPublic',
+        alias: 'posts',
         resource: 'posts'
     },
     tags: {
@@ -31,15 +31,15 @@ const RESOURCES = {
         resource: 'tags'
     },
     users: {
-        alias: 'authorsPublic',
+        alias: 'authors',
         resource: 'users'
     },
     pages: {
-        alias: 'pagesPublic',
+        alias: 'pages',
         resource: 'posts'
     },
     authors: {
-        alias: 'authorsPublic'
+        alias: 'authors'
     }
 };
 
@@ -163,7 +163,6 @@ get = function get(resource, options) {
     // Parse the options we're going to pass to the API
     apiOptions = parseOptions(ghostGlobals, this, apiOptions);
 
-    // @TODO: https://github.com/TryGhost/Ghost/issues/10548
     return api[apiVersion][controller][action](apiOptions).then(function success(result) {
         var blockParams;
 

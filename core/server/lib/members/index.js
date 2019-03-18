@@ -23,14 +23,13 @@ module.exports = function MembersApi({
     updateMember,
     getMember,
     listMembers,
-    sendEmail,
-    siteConfig
+    sendEmail
 }) {
     const {encodeToken, decodeToken, getPublicKeys} = Tokens({privateKey, publicKey, issuer});
 
-    let subscriptions = new Subscriptions(paymentConfig);
+    const subscriptions = new Subscriptions(paymentConfig);
 
-    let users = Users({
+    const users = Users({
         subscriptions,
         createMember,
         updateMember,
@@ -70,10 +69,6 @@ module.exports = function MembersApi({
             .then(member => encodeToken({
                 sub: member.id,
                 plans: member.subscriptions.map(sub => sub.plan),
-                exp: member.subscriptions
-                    .map(sub => sub.validUntil)
-                    .reduce((a, b) => Math.min(a, b),
-                        Math.floor((Date.now() / 1000) + (60 * 60 * 24 * 30))),
                 aud: audience
             }))
             .then(token => res.end(token))
@@ -87,10 +82,7 @@ module.exports = function MembersApi({
                     return subscriptions.getPublicConfig(adapter);
                 }));
             })
-            .then(data => res.json({
-                paymentConfig: data,
-                siteConfig: siteConfig
-            }))
+            .then(data => res.json(data))
             .catch(handleError(500, res));
     });
 
@@ -215,21 +207,6 @@ module.exports = function MembersApi({
     httpHandler.staticRouter = staticRouter;
     httpHandler.apiRouter = apiRouter;
     httpHandler.memberUserObject = users;
-    httpHandler.reconfigureSettings = function (data) {
-        subscriptions = new Subscriptions(data.paymentConfig);
-        users = Users({
-            subscriptions,
-            createMember,
-            updateMember,
-            getMember,
-            validateMember,
-            sendEmail,
-            encodeToken,
-            listMembers,
-            decodeToken
-        });
-        siteConfig = data.siteConfig;
-    };
 
     return httpHandler;
 };

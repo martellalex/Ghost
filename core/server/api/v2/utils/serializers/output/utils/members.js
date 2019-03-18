@@ -1,35 +1,15 @@
 const labs = require('../../../../../../services/labs');
-const membersService = require('../../../../../../services/members');
 const MEMBER_TAG = '#members';
-const PERMIT_CONTENT = false;
-const BLOCK_CONTENT = true;
 
 // Checks if request should hide memnbers only content
 function hideMembersOnlyContent(attrs, frame) {
-    const membersEnabled = labs.isSet('members');
-    if (!membersEnabled) {
-        return PERMIT_CONTENT;
+    let hasMemberTag = false;
+    if (labs.isSet('members') && !frame.original.context.member && attrs.tags) {
+        hasMemberTag = attrs.tags.find((tag) => {
+            return (tag.name === MEMBER_TAG);
+        });
     }
-
-    const postHasMemberTag = attrs.tags && attrs.tags.find((tag) => {
-        return (tag.name === MEMBER_TAG);
-    });
-    const requestFromMember = frame.original.context.member;
-    if (!postHasMemberTag) {
-        return PERMIT_CONTENT;
-    }
-    if (!requestFromMember) {
-        return BLOCK_CONTENT;
-    }
-
-    const memberHasPlan = !!(frame.original.context.member.plans || []).length;
-    if (!membersService.api.isPaymentConfigured()) {
-        return PERMIT_CONTENT;
-    }
-    if (memberHasPlan) {
-        return PERMIT_CONTENT;
-    }
-    return BLOCK_CONTENT;
+    return hasMemberTag;
 }
 
 const forPost = (attrs, frame) => {
@@ -46,7 +26,6 @@ const forPost = (attrs, frame) => {
 
         if (!origInclude || !origInclude.includes('tags')) {
             delete attrs.tags;
-            attrs.primary_tag = null;
         }
     }
 

@@ -53,10 +53,7 @@ fetch = function fetch(options, data) {
     const apiOptions = buildApiOptions(options, this);
     const apiVersion = data.root._locals.apiVersion;
 
-    // @TODO: https://github.com/TryGhost/Ghost/issues/10548
-    const controller = api[apiVersion].postsPublic || api[apiVersion].posts;
-
-    return controller
+    return api[apiVersion].posts
         .browse(apiOptions)
         .then(function handleSuccess(result) {
             var related = result.posts[0];

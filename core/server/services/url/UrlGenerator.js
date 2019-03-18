@@ -15,12 +15,6 @@ const _ = require('lodash'),
     }, {
         key: 'authors',
         replacement: 'authors.slug'
-    }, {
-        key: 'primary_tag',
-        replacement: 'primary_tag.slug'
-    }, {
-        key: 'primary_author',
-        replacement: 'primary_author.slug'
     }];
 
 class UrlGenerator {

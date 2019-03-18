@@ -1,9 +1,6 @@
 export default ({type, name, placeholder, value = '', error, onInput, required, className, children, icon}) => (
     <div className="gm-form-element">
-        <div className={[
-                (className ? className : ""),
-                "gm-input"
-                ].join(' ')}>
+        <div className="gm-input">
             <input
                 type={ type }
                 name={ name }
@@ -14,9 +11,11 @@ export default ({type, name, placeholder, value = '', error, onInput, required, 
                 required={ required }
                 className={[
                     (value ? "gm-input-filled" : ""),
-                    (error ? "gm-error" : "")
+                    (error ? "gm-error" : ""),
+                    className
                 ].join(' ')}
             />
+            <label for={ name }>{ placeholder }</label>
             <i>{ icon }</i>
             { children }
         </div>

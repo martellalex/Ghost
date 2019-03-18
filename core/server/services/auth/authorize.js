@@ -22,15 +22,6 @@ const authorize = {
             if (req.user && req.user.id) {
                 return next();
             } else {
-                // CASE: has no user access and public api is disabled
-                if (labs.isSet('publicAPI') !== true) {
-                    return next(new common.errors.NoPermissionError({
-                        message: common.i18n.t('errors.middleware.auth.publicAPIDisabled.error'),
-                        context: common.i18n.t('errors.middleware.auth.publicAPIDisabled.context'),
-                        help: common.i18n.t('errors.middleware.auth.forInformationRead', {url: 'https://docs.ghost.org/api/content/'})
-                    }));
-                }
-
                 return next(new common.errors.NoPermissionError({
                     message: common.i18n.t('errors.middleware.auth.pleaseSignIn')
                 }));
@@ -61,8 +52,7 @@ const authorize = {
             return next();
         }
         return next(new common.errors.NoPermissionError({
-            message: common.i18n.t('errors.middleware.auth.authorizationFailed'),
-            context: common.i18n.t('errors.middleware.auth.missingContentMemberOrIntegration')
+            message: common.i18n.t('errors.middleware.auth.pleaseSignInOrAuthenticate')
         }));
     },
 
@@ -80,8 +70,7 @@ const authorize = {
             return next();
         } else {
             return next(new common.errors.NoPermissionError({
-                message: common.i18n.t('errors.middleware.auth.authorizationFailed'),
-                context: common.i18n.t('errors.middleware.auth.missingAdminUserOrIntegration')
+                message: common.i18n.t('errors.middleware.auth.pleaseSignInOrAuthenticate')
             }));
         }
     }

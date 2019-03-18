@@ -1,6 +1,4 @@
-const createCard = require('../create-card');
-
-module.exports = createCard({
+module.exports = {
     name: 'image',
     type: 'dom',
     render(opts) {
@@ -35,9 +33,8 @@ module.exports = createCard({
             let figcaption = dom.createElement('figcaption');
             figcaption.appendChild(dom.createRawHTMLSection(payload.caption));
             figure.appendChild(figcaption);
-            figure.setAttribute('class', `${figure.getAttribute('class')} kg-card-hascaption`);
         }
 
         return figure;
     }
-});
+};

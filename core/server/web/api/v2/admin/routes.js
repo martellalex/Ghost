@@ -18,13 +18,11 @@ module.exports = function apiRoutes() {
     // ## CORS pre-flight check
     router.options('*', shared.middlewares.api.cors);
 
-    const http = apiv2.http;
-
-    // ## Public
-    router.get('/site', http(apiv2.site.read));
+    const http = apiImpl => apiv2.http(apiImpl, 'admin');
 
     // ## Configuration
-    router.get('/config', mw.authAdminApi, http(apiv2.config.read));
+    router.get('/configuration', http(apiv2.configuration.read));
+    router.get('/configuration/:key', mw.authAdminApi, http(apiv2.configuration.read));
 
     // ## Posts
     router.get('/posts', mw.authAdminApi, http(apiv2.posts.browse));
@@ -33,14 +31,6 @@ module.exports = function apiRoutes() {
     router.get('/posts/slug/:slug', mw.authAdminApi, http(apiv2.posts.read));
     router.put('/posts/:id', mw.authAdminApi, http(apiv2.posts.edit));
     router.del('/posts/:id', mw.authAdminApi, http(apiv2.posts.destroy));
-
-    // ## Pages
-    router.get('/pages', mw.authAdminApi, http(apiv2.pages.browse));
-    router.post('/pages', mw.authAdminApi, http(apiv2.pages.add));
-    router.get('/pages/:id', mw.authAdminApi, http(apiv2.pages.read));
-    router.get('/pages/slug/:slug', mw.authAdminApi, http(apiv2.pages.read));
-    router.put('/pages/:id', mw.authAdminApi, http(apiv2.pages.edit));
-    router.del('/pages/:id', mw.authAdminApi, http(apiv2.pages.destroy));
 
     // # Integrations
 
@@ -129,7 +119,7 @@ module.exports = function apiRoutes() {
 
     router.post('/themes/upload',
         mw.authAdminApi,
-        upload.single('file'),
+        upload.single('theme'),
         shared.middlewares.validation.upload({type: 'themes'}),
         http(apiv2.themes.upload)
     );
@@ -194,12 +184,55 @@ module.exports = function apiRoutes() {
     router.get('/authentication/setup', api.http(api.authentication.isSetup));
 
     // ## Images
-    router.post('/images/upload',
+    // @TODO: remove /uploads/ in favor of /images/ in Ghost 3.x
+    router.post('/uploads',
         mw.authAdminApi,
-        upload.single('file'),
+        upload.single('uploadimage'),
         shared.middlewares.validation.upload({type: 'images'}),
         shared.middlewares.image.normalize,
-        http(apiv2.images.upload)
+        http(apiv2.upload.image)
+    );
+
+    router.post('/uploads/profile-image',
+        mw.authAdminApi,
+        upload.single('uploadimage'),
+        shared.middlewares.validation.upload({type: 'images'}),
+        shared.middlewares.validation.profileImage,
+        shared.middlewares.image.normalize,
+        http(apiv2.upload.image)
+    );
+
+    router.post('/uploads/icon',
+        mw.authAdminApi,
+        upload.single('uploadimage'),
+        shared.middlewares.validation.upload({type: 'icons'}),
+        shared.middlewares.validation.blogIcon(),
+        http(apiv2.upload.image)
+    );
+
+    router.post('/images',
+        mw.authAdminApi,
+        upload.single('uploadimage'),
+        shared.middlewares.validation.upload({type: 'images'}),
+        shared.middlewares.image.normalize,
+        http(apiv2.upload.image)
+    );
+
+    router.post('/images/profile-image',
+        mw.authAdminApi,
+        upload.single('uploadimage'),
+        shared.middlewares.validation.upload({type: 'images'}),
+        shared.middlewares.validation.profileImage,
+        shared.middlewares.image.normalize,
+        http(apiv2.upload.image)
+    );
+
+    router.post('/images/icon',
+        mw.authAdminApi,
+        upload.single('uploadimage'),
+        shared.middlewares.validation.upload({type: 'icons'}),
+        shared.middlewares.validation.blogIcon(),
+        http(apiv2.upload.image)
     );
 
     // ## Invites

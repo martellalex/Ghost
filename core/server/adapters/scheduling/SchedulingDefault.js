@@ -1,9 +1,9 @@
-const util = require('util');
-const moment = require('moment');
-const debug = require('ghost-ignition').debug('scheduling-default');
-const SchedulingBase = require('./SchedulingBase');
-const common = require('../../lib/common');
-const request = require('../../lib/request');
+const util = require('util'),
+    moment = require('moment'),
+    request = require('superagent'),
+    debug = require('ghost-ignition').debug('scheduling-default'),
+    SchedulingBase = require('./SchedulingBase'),
+    common = require('../../lib/common');
 
 /**
  * allJobs is a sorted list by time attribute
@@ -197,60 +197,61 @@ SchedulingDefault.prototype._execute = function (jobs) {
  * - if we detect to publish a post in the past (case blog is down), we add a force flag
  */
 SchedulingDefault.prototype._pingUrl = function (object) {
+    debug('Ping url', object.url, moment().format('YYYY-MM-DD HH:mm:ss'), moment(object.time).format('YYYY-MM-DD HH:mm:ss'));
+
+    let timeout;
     const {url, time} = object;
-
-    debug('Ping url', url, moment().format('YYYY-MM-DD HH:mm:ss'), moment(time).format('YYYY-MM-DD HH:mm:ss'));
-
-    const httpMethod = object.extra ? object.extra.httpMethod : 'PUT';
-    const tries = object.tries || 0;
-    const requestTimeout = object.extra ? object.extra.timeoutInMS : 1000 * 5;
-    const maxTries = 30;
-
-    const options = {
-        timeout: requestTimeout,
-        method: httpMethod.toLowerCase(),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
+    const httpMethod = object.extra ? object.extra.httpMethod : 'PUT',
+        tries = object.tries || 0,
+        requestTimeout = object.extra ? object.extra.timeoutInMS : 1000 * 5,
+        maxTries = 30,
+        req = request[httpMethod.toLowerCase()](url),
+        self = this;
 
     if (moment(time).isBefore(moment())) {
         if (httpMethod === 'GET') {
-            // @todo: rename to searchParams when updating to Got v10
-            options.query = 'force=true';
+            req.query('force=true');
         } else {
-            options.body = JSON.stringify({force: true});
+            req.send({
+                force: true
+            });
         }
     }
 
-    return request(url, options).catch((err) => {
-        const {statusCode} = err;
+    req.timeout({
+        response: requestTimeout
+    });
 
-        // CASE: post/page was deleted already
-        if (statusCode === 404) {
-            return;
-        }
+    req.end(function (err, response) {
+        if (err) {
+            // CASE: post/page was deleted already
+            if (response && response.status === 404) {
+                return;
+            }
 
-        // CASE: blog is in maintenance mode, retry
-        if (statusCode === 503 && tries < maxTries) {
-            setTimeout(() => {
-                object.tries = tries + 1;
-                this._pingUrl(object);
-            }, this.retryTimeoutInMs);
+            // CASE: blog is in maintenance mode, retry
+            if (response && response.status === 503 && tries < maxTries) {
+                timeout = setTimeout(function pingAgain() {
+                    clearTimeout(timeout);
+
+                    object.tries = tries + 1;
+                    self._pingUrl(object);
+                }, self.retryTimeoutInMs);
+
+                common.logging.error(new common.errors.GhostError({
+                    err,
+                    context: 'Retrying...',
+                    level: 'normal'
+                }));
+
+                return;
+            }
 
             common.logging.error(new common.errors.GhostError({
                 err,
-                context: 'Retrying...',
-                level: 'normal'
+                level: 'critical'
             }));
-
-            return;
         }
-
-        common.logging.error(new common.errors.GhostError({
-            err,
-            level: 'critical'
-        }));
     });
 };
 

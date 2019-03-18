@@ -33,7 +33,7 @@ module.exports = function setupApiApp() {
 
     // API error handling
     apiApp.use(shared.middlewares.errorHandler.resourceNotFound);
-    apiApp.use(shared.middlewares.errorHandler.handleJSONResponseV2);
+    apiApp.use(shared.middlewares.errorHandler.handleJSONResponse);
 
     debug('Admin API v2 setup end');
 

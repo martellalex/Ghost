@@ -68,10 +68,7 @@
             }
         },
         "amp": {
-            "defaultValue" : "true",
-            "validations": {
-                "isIn": [["true", "false"]]
-            }
+            "defaultValue" : "true"
         },
         "ghost_head": {
             "defaultValue" : ""
@@ -113,10 +110,7 @@
     },
     "private": {
         "is_private": {
-            "defaultValue": "false",
-            "validations": {
-                "isIn": [["true", "false"]]
-            }
+            "defaultValue": "false"
         },
         "password": {
             "defaultValue": ""
@@ -134,9 +128,6 @@
         },
         "members_session_secret": {
             "defaultValue": null
-        },
-        "members_subscription_settings": {
-            "defaultValue": "{\"isPaid\":false,\"paymentProcessors\":[{\"adapter\":\"stripe\",\"config\":{\"secret_token\":\"\",\"public_token\":\"\",\"product\":{\"name\":\"Ghost Subscription\"},\"plans\":[{\"name\":\"Monthly\",\"currency\":\"usd\",\"interval\":\"month\",\"amount\":\"\"},{\"name\":\"Yearly\",\"currency\":\"usd\",\"interval\":\"year\",\"amount\":\"\"}]}}]}"
         }
     }
 }

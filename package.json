@@ -1,42 +1,39 @@
 {
-  "name": "ghost",
-  "version": "2.18.1",
-  "description": "The professional publishing platform",
-  "author": "Ghost Foundation",
-  "homepage": "https://ghost.org",
-  "keywords": [
-    "ghost",
-    "blog",
-    "cms",
-    "headless",
-    "content",
-    "markdown"
+  "_args": [
+    [
+      "ghost@2.14.3",
+      "/Users/minimartelly/gitLocal/toehold"
+    ]
   ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/TryGhost/Ghost.git"
+  "_from": "ghost@2.14.3",
+  "_id": "ghost@2.14.3",
+  "_inBundle": false,
+  "_integrity": "sha512-62YZv/IGTU8uRc37qh6sk5N+5Sc2cQ9S0Lxjiqu77uUoVCijHul6q0qPScGta75EOrMCjhEEFnBs5L6p4pKalw==",
+  "_location": "/ghost",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "ghost@2.14.3",
+    "name": "ghost",
+    "escapedName": "ghost",
+    "rawSpec": "2.14.3",
+    "saveSpec": null,
+    "fetchSpec": "2.14.3"
   },
-  "bugs": "https://github.com/TryGhost/Ghost/issues",
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/ghost/-/ghost-2.14.3.tgz",
+  "_spec": "2.14.3",
+  "_where": "/Users/minimartelly/gitLocal/toehold",
+  "author": {
+    "name": "Ghost Foundation"
+  },
+  "bugs": {
+    "url": "https://github.com/TryGhost/Ghost/issues"
+  },
   "contributors": "https://github.com/TryGhost/Ghost/graphs/contributors",
-  "license": "MIT",
-  "main": "./core/index",
-  "scripts": {
-    "start": "node index",
-    "dev": "DEBUG=ghost:* grunt dev",
-    "test": "grunt validate",
-    "ci": "grunt validate --verbose",
-    "ci:regression": "grunt test-regression --verbose",
-    "setup": "yarn install && knex-migrator init && grunt symlink && grunt init || true",
-    "lint:server": "eslint --ignore-path .eslintignore 'core/server/**/*.js' 'core/*.js' '*.js'",
-    "lint:test": "eslint -c core/test/.eslintrc.json --ignore-path core/test/.eslintignore 'core/test/**/*.js'",
-    "lint": "yarn lint:server && yarn lint:test",
-    "posttest": "yarn lint",
-    "fixmodulenotdefined": "yarn cache clean && cd core/client && rm -rf node_modules tmp dist && yarn && cd ../../"
-  },
-  "engines": {
-    "node": "^6.9.0 || ^8.9.0 || ^10.13.0",
-    "cli": "^1.9.0"
-  },
   "dependencies": {
     "@nexes/nql": "0.2.1",
     "ajv": "6.8.1",
@@ -67,7 +64,7 @@
     "express-session": "1.15.6",
     "extract-zip": "1.6.7",
     "fs-extra": "3.0.1",
-    "ghost-ignition": "3.0.4",
+    "ghost-ignition": "3.0.2",
     "ghost-storage-base": "0.0.3",
     "glob": "5.0.15",
     "got": "8.3.2",
@@ -105,19 +102,18 @@
     "rss": "1.2.2",
     "sanitize-html": "1.20.0",
     "semver": "5.6.0",
+    "sharp": "0.21.3",
     "simple-dom": "0.3.2",
     "simple-html-tokenizer": "0.5.7",
+    "sqlite3": "4.0.6",
     "stripe": "^6.22.0",
+    "superagent": "4.1.0",
     "unidecode": "0.1.8",
     "uuid": "3.3.2",
     "validator": "6.3.0",
     "xml": "1.0.1"
   },
-  "optionalDependencies": {
-    "@tryghost/html-to-mobiledoc": "0.2.4",
-    "sharp": "0.21.3",
-    "sqlite3": "4.0.6"
-  },
+  "description": "The professional publishing platform",
   "devDependencies": {
     "eslint": "5.12.1",
     "eslint-plugin-ghost": "0.1.0",
@@ -149,5 +145,41 @@
     "sinon": "7.2.3",
     "supertest": "3.4.1",
     "tmp": "0.0.33"
-  }
+  },
+  "engines": {
+    "cli": "^1.9.0",
+    "node": "^6.9.0 || ^8.9.0 || ^10.13.0"
+  },
+  "homepage": "https://ghost.org",
+  "keywords": [
+    "ghost",
+    "blog",
+    "cms",
+    "headless",
+    "content",
+    "markdown"
+  ],
+  "license": "MIT",
+  "main": "./core/index",
+  "name": "ghost",
+  "optionalDependencies": {
+    "sharp": "0.21.3",
+    "sqlite3": "4.0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TryGhost/Ghost.git"
+  },
+  "scripts": {
+    "dev": "DEBUG=ghost:* grunt dev",
+    "fixmodulenotdefined": "yarn cache clean && cd core/client && rm -rf node_modules tmp dist && yarn && cd ../../",
+    "lint": "yarn lint:server && yarn lint:test",
+    "lint:server": "eslint --ignore-path .eslintignore 'core/server/**/*.js' 'core/*.js' '*.js'",
+    "lint:test": "eslint -c core/test/.eslintrc.json --ignore-path core/test/.eslintignore 'core/test/**/*.js'",
+    "setup": "yarn install && knex-migrator init && grunt symlink && grunt init || true",
+    "start": "node index",
+    "test": "grunt validate --verbose",
+    "test:regression": "grunt test-regression --verbose"
+  },
+  "version": "2.14.3"
 }

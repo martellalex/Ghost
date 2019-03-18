@@ -118,14 +118,10 @@ module.exports = {
     add(apiConfig, frame) {
         debug('validate add');
 
-        // NOTE: this block should be removed completely once JSON Schema validations
-        //       are introduced for all of the endpoints
-        if (!['posts', 'tags'].includes(apiConfig.docName)) {
-            if (_.isEmpty(frame.data) || _.isEmpty(frame.data[apiConfig.docName]) || _.isEmpty(frame.data[apiConfig.docName][0])) {
-                return Promise.reject(new common.errors.BadRequestError({
-                    message: common.i18n.t('errors.api.utils.noRootKeyProvided', {docName: apiConfig.docName})
-                }));
-            }
+        if (_.isEmpty(frame.data) || _.isEmpty(frame.data[apiConfig.docName]) || _.isEmpty(frame.data[apiConfig.docName][0])) {
+            return Promise.reject(new common.errors.BadRequestError({
+                message: common.i18n.t('errors.api.utils.noRootKeyProvided', {docName: apiConfig.docName})
+            }));
         }
 
         const jsonpath = require('jsonpath');
@@ -170,17 +166,11 @@ module.exports = {
             return result;
         }
 
-        // NOTE: this block should be removed completely once JSON Schema validations
-        //       are introduced for all of the endpoints. `id` property is currently
-        //       stripped from the request body and only the one provided in `options`
-        //       is used in later logic
-        if (!['posts', 'tags'].includes(apiConfig.docName)) {
-            if (frame.options.id && frame.data[apiConfig.docName][0].id
-                && frame.options.id !== frame.data[apiConfig.docName][0].id) {
-                return Promise.reject(new common.errors.BadRequestError({
-                    message: common.i18n.t('errors.api.utils.invalidIdProvided')
-                }));
-            }
+        if (frame.options.id && frame.data[apiConfig.docName][0].id
+            && frame.options.id !== frame.data[apiConfig.docName][0].id) {
+            return Promise.reject(new common.errors.BadRequestError({
+                message: common.i18n.t('errors.api.utils.invalidIdProvided')
+            }));
         }
     },
 

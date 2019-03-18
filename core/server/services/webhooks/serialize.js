@@ -4,21 +4,14 @@ module.exports = (event, model) => {
     const api = require('../../api');
 
     const apiVersion = model.get('api_version') || 'v2';
-
-    const resourceName = event.match(/(\w+)\./)[1];
-    const docName = `${resourceName}s`;
+    const docName = model.tableName;
 
     const ops = [];
 
     if (Object.keys(model.attributes).length) {
+        let frame = {options: {previous: false, context: {user: true}}};
+
         ops.push(() => {
-            let frame = {options: {previous: false, context: {user: true}}};
-
-            if (['posts', 'pages'].includes(docName)) {
-                frame.options.formats = ['mobiledoc', 'html', 'plaintext'];
-                frame.options.withRelated = ['tags', 'authors'];
-            }
-
             return api.shared
                 .serializers
                 .handle
@@ -37,11 +30,6 @@ module.exports = (event, model) => {
         ops.push(() => {
             const frame = {options: {previous: true, context: {user: true}}};
 
-            if (['posts', 'pages'].includes(docName)) {
-                frame.options.formats = ['mobiledoc', 'html', 'plaintext'];
-                frame.options.withRelated = ['tags', 'authors'];
-            }
-
             return api.shared
                 .serializers
                 .handle
@@ -56,7 +44,7 @@ module.exports = (event, model) => {
         });
     }
 
-    return sequence(ops)
+    sequence(ops)
         .then((results) => {
             const current = results[0];
             const previous = results[1];

@@ -80,8 +80,7 @@ themeMiddleware.updateTemplateData = function updateTemplateData(req, res, next)
             blog: siteData,
             site: siteData,
             labs: labsData,
-            config: themeData,
-            member: req.member
+            config: themeData
         }
     });
 

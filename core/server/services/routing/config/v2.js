@@ -10,7 +10,7 @@ module.exports.QUERY = {
         }
     },
     author: {
-        controller: 'authorsPublic',
+        controller: 'authors',
         type: 'read',
         resource: 'authors',
         options: {
@@ -18,7 +18,7 @@ module.exports.QUERY = {
         }
     },
     post: {
-        controller: 'postsPublic',
+        controller: 'posts',
         type: 'read',
         resource: 'posts',
         options: {
@@ -26,7 +26,7 @@ module.exports.QUERY = {
         }
     },
     page: {
-        controller: 'pagesPublic',
+        controller: 'pages',
         type: 'read',
         resource: 'pages',
         options: {

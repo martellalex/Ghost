@@ -2,8 +2,9 @@ import { IconError } from './icons';
 
 export default ({title, error, errorText, children}) => (
     <div>
+        <div className="gm-logo"></div>
         <div className="gm-auth-header">
-            { title ? (<h1>{title}</h1>) : "" }
+            <h1>{ title }</h1>
             { children }
         </div>
         {(error ?

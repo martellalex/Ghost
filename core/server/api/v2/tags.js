@@ -77,6 +77,11 @@ module.exports = {
                 include: {
                     values: ALLOWED_INCLUDES
                 }
+            },
+            data: {
+                name: {
+                    required: true
+                }
             }
         },
         permissions: true,

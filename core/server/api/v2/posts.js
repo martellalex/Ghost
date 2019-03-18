@@ -1,8 +1,8 @@
 const models = require('../../models');
 const common = require('../../lib/common');
 const urlService = require('../../services/url');
-const allowedIncludes = ['tags', 'authors', 'authors.roles'];
-const unsafeAttrs = ['status', 'authors'];
+const allowedIncludes = ['author', 'tags', 'authors', 'authors.roles'];
+const unsafeAttrs = ['author_id', 'status', 'authors'];
 
 module.exports = {
     docName: 'posts',
@@ -12,6 +12,7 @@ module.exports = {
             'filter',
             'fields',
             'formats',
+            'status',
             'limit',
             'order',
             'page',
@@ -40,6 +41,7 @@ module.exports = {
         options: [
             'include',
             'fields',
+            'status',
             'formats',
             'debug',
             'absolute_urls'
@@ -47,6 +49,7 @@ module.exports = {
         data: [
             'id',
             'slug',
+            'status',
             'uuid'
         ],
         validation: {
@@ -80,16 +83,12 @@ module.exports = {
         statusCode: 201,
         headers: {},
         options: [
-            'include',
-            'source'
+            'include'
         ],
         validation: {
             options: {
                 include: {
                     values: allowedIncludes
-                },
-                source: {
-                    values: ['html']
                 }
             }
         },
@@ -114,8 +113,7 @@ module.exports = {
         headers: {},
         options: [
             'include',
-            'id',
-            'source'
+            'id'
         ],
         validation: {
             options: {
@@ -124,9 +122,6 @@ module.exports = {
                 },
                 id: {
                     required: true
-                },
-                source: {
-                    values: ['html']
                 }
             }
         },
@@ -136,15 +131,10 @@ module.exports = {
         query(frame) {
             return models.Post.edit(frame.data.posts[0], frame.options)
                 .then((model) => {
-                    if (
-                        model.get('status') === 'published' && model.wasChanged() ||
-                        model.get('status') === 'draft' && model.previous('status') === 'published'
-                    ) {
+                    if (model.get('status') === 'published' && model.wasChanged() ||
+                        model.get('status') === 'draft' && model.previous('status') === 'published') {
                         this.headers.cacheInvalidate = true;
-                    } else if (
-                        model.get('status') === 'draft' && model.previous('status') !== 'published' ||
-                        model.get('status') === 'scheduled' && model.wasChanged()
-                    ) {
+                    } else if (model.get('status') === 'draft' && model.previous('status') !== 'published') {
                         this.headers.cacheInvalidate = {
                             value: urlService.utils.urlFor({
                                 relativeUrl: urlService.utils.urlJoin('/p', model.get('uuid'), '/')

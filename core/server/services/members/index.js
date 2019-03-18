@@ -1,17 +1,8 @@
-const config = require('../../config/index.js');
-const common = require('../../lib/common');
-
+const labs = require('../labs');
 module.exports = {
     get api() {
-        if (!config.get('enableDeveloperExperiments')) {
-            return {
-                apiRouter: function (req, res, next) {
-                    return next(new common.errors.NotFoundError());
-                },
-                staticRouter: function (req, res, next) {
-                    return next(new common.errors.NotFoundError());
-                }
-            };
+        if (!labs.isSet('members')) {
+            return {};
         }
         return require('./api');
     }

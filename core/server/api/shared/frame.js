@@ -10,7 +10,7 @@ class Frame {
         this.user = {};
         this.file = {};
         this.files = [];
-        this.apiType = null;
+        this.apiType = obj.apiType;
     }
 
     /**
@@ -41,7 +41,7 @@ class Frame {
         this.options.context = this.original.context;
 
         if (this.original.body && Object.keys(this.original.body).length) {
-            this.data = _.cloneDeep(this.original.body);
+            this.data = this.original.body;
         } else {
             if (apiConfig.data) {
                 if (typeof apiConfig.data === 'function') {

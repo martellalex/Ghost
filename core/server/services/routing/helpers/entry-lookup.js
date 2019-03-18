@@ -1,9 +1,8 @@
-const _ = require('lodash');
-const Promise = require('bluebird');
-const url = require('url');
-const debug = require('ghost-ignition').debug('services:routing:helpers:entry-lookup');
-const routeMatch = require('path-match')();
-const config = require('../../../config');
+const _ = require('lodash'),
+    Promise = require('bluebird'),
+    url = require('url'),
+    debug = require('ghost-ignition').debug('services:routing:helpers:entry-lookup'),
+    routeMatch = require('path-match')();
 
 function entryLookup(postUrl, routerOptions, locals) {
     debug(postUrl);
@@ -36,16 +35,8 @@ function entryLookup(postUrl, routerOptions, locals) {
      * Query database to find entry.
      * @deprecated: `author`, will be removed in Ghost 3.0
      */
-    let options = {
-        include: 'author,authors,tags'
-    };
-
-    if (config.get('enableDeveloperExperiments')) {
-        options.context = {member: locals.member};
-    }
-
-    return (api[routerOptions.query.controller] || api[routerOptions.query.resource])
-        .read(_.extend(_.pick(params, 'slug', 'id'), options))
+    return api[routerOptions.query.controller]
+        .read(_.extend(_.pick(params, 'slug', 'id'), {include: 'author,authors,tags'}))
         .then(function then(result) {
             const entry = result[routerOptions.query.resource][0];
 

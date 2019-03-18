@@ -81,7 +81,7 @@ Tag = ghostBookshelf.Model.extend({
             // these are the only options that can be passed to Bookshelf / Knex.
             validOptions = {
                 findAll: ['columns'],
-                findOne: ['columns', 'visibility'],
+                findOne: ['visibility'],
                 destroy: ['destroyAll']
             };
 

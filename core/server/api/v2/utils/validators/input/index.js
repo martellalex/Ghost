@@ -3,10 +3,6 @@ module.exports = {
         return require('./posts');
     },
 
-    get pages() {
-        return require('./pages');
-    },
-
     get invites() {
         return require('./invites');
     },
@@ -21,9 +17,5 @@ module.exports = {
 
     get users() {
         return require('./users');
-    },
-
-    get images() {
-        return require('./images');
     }
 };

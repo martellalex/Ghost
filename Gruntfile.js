@@ -198,12 +198,6 @@ const configureGrunt = function (grunt) {
                     }
                 },
                 stderr: function (chunk) {
-                    // ember-data 3.6.0-3.7.0 outputs a "Circular dependency" warning which we want to ignore
-                    // TODO: remove after upgrading to ember-data 3.8.0 which already filters the output
-                    if (chunk.indexOf('Circular dependency') > -1) {
-                        return;
-                    }
-
                     hasBuiltClient = true;
                     grunt.log.error(chunk);
                 }
@@ -221,10 +215,7 @@ const configureGrunt = function (grunt) {
                     var upstream = grunt.option('upstream') || process.env.GHOST_UPSTREAM || 'upstream';
                     grunt.log.writeln('Pulling down the latest master from ' + upstream);
                     return `
-                        git submodule sync
-                        git submodule update
-
-                        if ! git diff --exit-code --quiet --ignore-submodules=untracked; then
+                        if ! git diff --exit-code --quiet; then
                             echo "Working directory is not clean, do you have uncommited changes? Please commit, stash or discard changes to continue."
                             exit 1
                         fi
@@ -473,8 +464,12 @@ const configureGrunt = function (grunt) {
     // **Main testing task**
     //
     // `grunt validate` will either run all tests or run linting
-    // `grunt validate` is called by `yarn test` and is used by Travis.
-    grunt.registerTask('validate', 'Run tests', function () {
+    // `grunt validate` is called by `npm test` and is used by Travis.
+    grunt.registerTask('validate', 'Run tests or lint code', function () {
+        if (process.env.TEST_SUITE === 'lint') {
+            return grunt.task.run(['lint']);
+        }
+
         grunt.task.run(['test-acceptance', 'test-unit']);
     });
 
@@ -639,7 +634,6 @@ const configureGrunt = function (grunt) {
     grunt.registerTask('release',
         'Release task - creates a final built zip\n' +
         ' - Do our standard build steps \n' +
-        ' - Run all tests(acceptance + regression + unit) \n' +
         ' - Copy files to release-folder/#/#{version} directory\n' +
         ' - Clean out unnecessary files (travis, .git*, etc)\n' +
         ' - Zip files in release-folder to dist-folder/#{version} directory',
@@ -663,14 +657,8 @@ const configureGrunt = function (grunt) {
                     dest: 'core/server/web/admin/views/default.html'
                 }]
             });
-            if (!grunt.option('skip-tests')) {
-                grunt.task.run(['update_submodules:pinned', 'subgrunt:init', 'test-all', 'clean:built', 'clean:tmp', 'prod', 'clean:release', 'copy:admin_html', 'copy:release', 'compress:release']);
-            } else {
-                grunt.log.writeln(chalk.red(
-                    chalk.bold('Skipping tests...')
-                ));
-                grunt.task.run(['update_submodules:pinned', 'subgrunt:init', 'clean:built', 'clean:tmp', 'prod', 'clean:release', 'copy:admin_html', 'copy:release', 'compress:release']);
-            }
+
+            grunt.task.run(['update_submodules:pinned', 'subgrunt:init', 'clean:built', 'clean:tmp', 'prod', 'clean:release', 'copy:admin_html', 'copy:release', 'compress:release']);
         }
     );
 };

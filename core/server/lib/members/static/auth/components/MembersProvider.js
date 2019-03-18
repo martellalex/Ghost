@@ -6,9 +6,6 @@ export default class MembersProvider extends Component {
     constructor() {
         super();
         this.setGatewayFrame = gatewayFrame => this.gatewayFrame = gatewayFrame;
-        this.ready = new Promise((resolve) => {
-            this.setReady = resolve;
-        })
         this.gateway = null;
     }
 
@@ -19,8 +16,7 @@ export default class MembersProvider extends Component {
                 signin: this.createMethod('signin'),
                 signup: this.createMethod('signup'),
                 requestPasswordReset: this.createMethod('requestPasswordReset'),
-                resetPassword: this.createMethod('resetPassword'),
-                getConfig: this.createMethod('getConfig'),
+                resetPassword: this.createMethod('resetPassword')
             }
         };
     }
@@ -39,22 +35,19 @@ export default class MembersProvider extends Component {
         const gatewayFrame = this.gatewayFrame;
         gatewayFrame.addEventListener('load', () => {
             this.gateway = layer0(gatewayFrame)
-            this.setReady();
         });
     }
 
     createMethod(method) {
         return (options) => {
-            return this.ready.then(() => {
-                return new Promise((resolve, reject) => {
-                    this.gateway.call(method, options, (err, successful) => {
-                        if (err || !successful) {
-                            reject(err || !successful);
-                        }
-                        resolve(successful);
-                    })
-                });
-            });
+            return new Promise((resolve, reject) =>
+                this.gateway.call(method, options, (err, successful) => {
+                    if (err || !successful) {
+                        reject(err || !successful);
+                    }
+                    resolve(successful);
+                })
+            );
         }
     }
 

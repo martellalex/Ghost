@@ -2,10 +2,8 @@ const url = require('url');
 const settingsCache = require('../settings/cache');
 const config = require('../../config');
 const MembersApi = require('../../lib/members');
-const common = require('../../lib/common');
 const models = require('../../models');
 const mail = require('../mail');
-const blogIcon = require('../../lib/image/blog-icon');
 
 function createMember({name, email, password}) {
     return models.Member.add({
@@ -61,41 +59,12 @@ function validateMember({email, password}) {
     });
 }
 
-function parseMembersSettings() {
-    let membersSettings = settingsCache.get('members_subscription_settings');
-    if (!membersSettings) {
-        membersSettings = {
-            isPaid: false,
-            paymentProcessors: [{
-                adapter: 'stripe',
-                config: {
-                    secret_token: '',
-                    public_token: '',
-                    product: {
-                        name: 'Ghost Subscription'
-                    },
-                    plans: [
-                        {
-                            name: 'Monthly',
-                            currency: 'usd',
-                            interval: 'month',
-                            amount: ''
-                        },
-                        {
-                            name: 'Yearly',
-                            currency: 'usd',
-                            interval: 'year',
-                            amount: ''
-                        }
-                    ]
-                }
-            }]
-        };
+// @TODO this should check some config/settings and return Promise.reject by default
+function validateAudience({audience, origin}) {
+    if (audience === origin) {
+        return Promise.resolve();
     }
-    if (!membersSettings.isPaid) {
-        membersSettings.paymentProcessors = [];
-    }
-    return membersSettings;
+    return Promise.resolve();
 }
 
 const publicKey = settingsCache.get('members_public_key');
@@ -109,19 +78,6 @@ const ssoOrigin = siteOrigin;
 let mailer;
 
 const membersConfig = config.get('members');
-const membersSettings = parseMembersSettings();
-
-function validateAudience({audience, origin}) {
-    if (audience === origin) {
-        return Promise.resolve();
-    }
-    if (audience === siteOrigin) {
-        if (membersConfig.contentApiAccess.includes(origin)) {
-            return Promise.resolve();
-        }
-    }
-    return Promise.reject();
-}
 
 function sendEmail(member, {token}) {
     if (!(mailer instanceof mail.GhostMailer)) {
@@ -150,8 +106,6 @@ function sendEmail(member, {token}) {
     });
 }
 
-const defaultBlogTitle = settingsCache.get('title') ? settingsCache.get('title').replace(/"/g, '\\"') : 'Publication';
-const blogIconUrl = blogIcon.getIconUrl();
 const api = MembersApi({
     authConfig: {
         issuer,
@@ -161,11 +115,7 @@ const api = MembersApi({
         ssoOrigin
     },
     paymentConfig: {
-        processors: membersSettings.paymentProcessors
-    },
-    siteConfig: {
-        title: defaultBlogTitle,
-        icon: blogIconUrl
+        processors: membersConfig.paymentProcessors
     },
     validateAudience,
     createMember,
@@ -176,31 +126,5 @@ const api = MembersApi({
     sendEmail
 });
 
-const updateSettingFromModel = function updateSettingFromModel(settingModel) {
-    if (settingModel.get('key') === 'members_subscription_settings'
-            || settingModel.get('key') === 'title'
-        || settingModel.get('key') === 'icon') {
-        let membersSettings = parseMembersSettings();
-        const defaultBlogTitle = settingsCache.get('title') ? settingsCache.get('title').replace(/"/g, '\\"') : 'Publication';
-        const blogIconUrl = blogIcon.getIconUrl();
-        api.reconfigureSettings({
-            paymentConfig: {
-                processors: membersSettings.paymentProcessors
-            },
-            siteConfig: {
-                title: defaultBlogTitle,
-                icon: blogIconUrl
-            }
-        });
-    }
-};
-
-// Bind to events to automatically keep subscription info up-to-date from settings
-common.events.on('settings.edited', updateSettingFromModel);
-
 module.exports = api;
 module.exports.publicKey = publicKey;
-module.exports.isPaymentConfigured = function () {
-    let membersSettings = parseMembersSettings();
-    return !!membersSettings.paymentProcessors.length;
-};

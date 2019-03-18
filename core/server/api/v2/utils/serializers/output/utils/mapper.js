@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const utils = require('../../../index');
 const url = require('./url');
 const date = require('./date');
@@ -9,7 +8,7 @@ const extraAttrs = require('./extra-attrs');
 const mapUser = (model, frame) => {
     const jsonModel = model.toJSON ? model.toJSON(frame.options) : model;
 
-    url.forUser(model.id, jsonModel, frame.options);
+    url.forUser(model.id, jsonModel);
 
     clean.author(jsonModel, frame);
 
@@ -19,27 +18,23 @@ const mapUser = (model, frame) => {
 const mapTag = (model, frame) => {
     const jsonModel = model.toJSON ? model.toJSON(frame.options) : model;
 
-    url.forTag(model.id, jsonModel, frame.options);
+    url.forTag(model.id, jsonModel);
     clean.tag(jsonModel, frame);
 
     return jsonModel;
 };
 
 const mapPost = (model, frame) => {
-    const extendedOptions = Object.assign(_.cloneDeep(frame.options), {
-        extraProperties: ['canonical_url']
-    });
-
-    const jsonModel = model.toJSON(extendedOptions);
+    const jsonModel = model.toJSON(frame.options);
 
     url.forPost(model.id, jsonModel, frame.options);
 
     if (utils.isContentAPI(frame)) {
         date.forPost(jsonModel);
         members.forPost(jsonModel, frame);
+        extraAttrs.forPost(frame, model, jsonModel);
     }
 
-    extraAttrs.forPost(frame, model, jsonModel);
     clean.post(jsonModel, frame);
 
     if (frame.options && frame.options.withRelated) {
@@ -51,18 +46,29 @@ const mapPost = (model, frame) => {
                 jsonModel.tags = jsonModel.tags.map(tag => mapTag(tag, frame));
             }
 
+            if (relation === 'author' && jsonModel.author) {
+                jsonModel.author = mapUser(jsonModel.author, frame);
+            }
+
             if (relation === 'authors' && jsonModel.authors) {
                 jsonModel.authors = jsonModel.authors.map(author => mapUser(author, frame));
             }
         });
     }
 
+    /**
+     * Remove extra data attributes passed for filtering when used with columns/fields as bookshelf doesn't filter it out
+     */
+    if (frame.options.columns && frame.options.columns.indexOf('page') < 0) {
+        delete jsonModel.page;
+    }
+
     return jsonModel;
 };
 
-const mapSettings = (attrs, frame) => {
+const mapSettings = (attrs) => {
     url.forSettings(attrs);
-    extraAttrs.forSettings(attrs, frame);
+    extraAttrs.forSettings(attrs);
     return attrs;
 };
 
