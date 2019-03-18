@@ -76,6 +76,8 @@ function handleSource(req, res, next) {
 function storeSubscriber(req, res, next) {
     req.body.status = 'subscribed';
 
+    console.log(req.body);
+
     const api = require('../../../api')[res.locals.apiVersion];
 
     if (_.isEmpty(req.body.email)) {
