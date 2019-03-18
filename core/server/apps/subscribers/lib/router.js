@@ -1,5 +1,5 @@
 var Mixpanel = require('mixpanel');
-var mixpanel = Mixpanel.init('2cdf936c9674a6135ab2fb54450cc045',{
+var mixpanel = Mixpanel.init('8e4d0a3774e49c8624057bad6d1d26a4',{
     protocol:'https'
 });
 
