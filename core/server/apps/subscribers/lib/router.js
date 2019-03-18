@@ -1,4 +1,3 @@
-// modified to include mixpanel
 const path = require('path'),
     _ = require('lodash'),
     express = require('express'),
