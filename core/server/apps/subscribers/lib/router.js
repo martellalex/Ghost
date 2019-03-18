@@ -33,13 +33,12 @@ function _renderer(req, res) {
 //hack to include mixpanel tracking
 function mixpanelTracking(distinctId, email){
     mixpanel.track('subscribe',{
-        distinct_id: distinctId
+        'distinct_id': distinctId
     });
 
-    mixpanel.people.set( email, {
-        distinct_id : distinct_id,
-        $name : email,
-        $email : email
+    mixpanel.people.set( distinct_id, {
+        '$name' : email,
+        '$email' : email
     })
 }
 
