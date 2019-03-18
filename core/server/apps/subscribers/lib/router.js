@@ -1,3 +1,8 @@
+var Mixpanel = require('mixpanel');
+var mixpanel = Mixpanel.init('2cdf936c9674a6135ab2fb54450cc045',{
+    protocol:'https'
+});
+
 const path = require('path'),
     _ = require('lodash'),
     express = require('express'),
@@ -23,6 +28,19 @@ function _renderer(req, res) {
 
     // Render Call
     return routing.helpers.renderer(req, res, data);
+}
+
+//hack to include mixpanel tracking
+function mixpanelTracking(distinctId, email){
+    mixpanel.track('subscribe',{
+        distinct_id: distinctId
+    });
+
+    mixpanel.people.set( email, {
+        distinct_id : distinct_id,
+        $name : email,
+        $email : email
+    })
 }
 
 /**
@@ -76,7 +94,7 @@ function handleSource(req, res, next) {
 function storeSubscriber(req, res, next) {
     req.body.status = 'subscribed';
 
-    console.log(req.body);
+    mixpanelTracking(req.body.mixpanelId,req.body.email);
 
     const api = require('../../../api')[res.locals.apiVersion];
 
