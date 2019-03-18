@@ -36,7 +36,7 @@ function mixpanelTracking(distinctId, email){
         'distinct_id': distinctId
     });
 
-    mixpanel.people.set( distinct_id, {
+    mixpanel.people.set( distinctId, {
         '$name' : email,
         '$email' : email
     })
