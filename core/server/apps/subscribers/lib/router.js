@@ -31,10 +31,11 @@ function _renderer(req, res) {
 }
 
 //hack to include mixpanel tracking
-function mixpanelTracking(distinctId, email){
+function mixpanelTracking(distinctId, email, cohortWeek){
     mixpanel.track('subscribe',{
         'distinct_id': distinctId,
-        'email' : email
+        'email' : email,
+        'cohortWeek' : email
     });
 
     mixpanel.people.set( distinctId, {
@@ -94,7 +95,7 @@ function handleSource(req, res, next) {
 function storeSubscriber(req, res, next) {
     req.body.status = 'subscribed';
 
-    mixpanelTracking(req.body.mixpanelId,req.body.email);
+    mixpanelTracking(req.body.mixpanelId,req.body.email,req.body.cohortWeek);
 
     const api = require('../../../api')[res.locals.apiVersion];
 
