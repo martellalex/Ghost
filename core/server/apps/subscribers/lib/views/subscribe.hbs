@@ -128,9 +128,10 @@
     <script type="text/javascript">
 
     $(window).load(function(){
-        var mixpanelId = mixpanel.get_distinct_id()
-        var appendage = '<input name="mixpanelId" type="hidden" value='+mixpanelId+'>'
-        $('div.form-group').append(appendage)
+        var mixpanelId = mixpanel.get_distinct_id();
+        var cohortWeek = mixpanel.get_property('cohortWeek');
+        var appendage = '<input name="mixpanelId" type="hidden" value='+mixpanelId+'><input name="mixpanelId" type="hidden" value='+cohortWeek+'>';
+        $('div.form-group').append(appendage);
     });
 
     </script>
