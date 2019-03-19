@@ -35,7 +35,7 @@ function mixpanelTracking(distinctId, email, cohortWeek){
     mixpanel.track('subscribe',{
         'distinct_id': distinctId,
         'email' : email,
-        'cohortWeek' : email
+        'cohortWeek' : cohortWeek
     });
 
     mixpanel.people.set( distinctId, {
@@ -94,6 +94,8 @@ function handleSource(req, res, next) {
 
 function storeSubscriber(req, res, next) {
     req.body.status = 'subscribed';
+
+    console.log(req.body);
 
     mixpanelTracking(req.body.mixpanelId,req.body.email,req.body.cohortWeek);
 
