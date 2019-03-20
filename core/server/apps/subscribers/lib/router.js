@@ -33,13 +33,13 @@ function _renderer(req, res) {
 //hack to include mixpanel tracking
 function mixpanelTracking(mixObj){
 
-    console.log(mixObj);
-
     mixpanel.track('subscribe',mixObj);
 
+    var objEmail = mixObj[email];
+
     mixpanel.people.set(mixObj[distinct_id], {
-        $name : mixObj[email],
-        $email : mixObj[email]
+        $name : objEmail,
+        $email : objEmail
     })
 }
 
