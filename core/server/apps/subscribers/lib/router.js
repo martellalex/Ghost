@@ -33,7 +33,7 @@ function _renderer(req, res) {
 //hack to include mixpanel tracking
 function mixpanelTracking(mixObj){
 
-    console.log(mixObj)
+    console.log(mixObj);
 
     mixpanel.track('subscribe',mixObj);
 
@@ -95,7 +95,6 @@ function storeSubscriber(req, res, next) {
     req.body.status = 'subscribed';
 
     var mixObject = {};
-    mixObject[email] = req.body.email;
 
     for (var key in req.body){
       if(req.body.hasOwnProperty(key)){
@@ -105,6 +104,8 @@ function storeSubscriber(req, res, next) {
         }
       }
     }    
+
+    mixObject['email'] = req.body.email;
 
     mixpanelTracking(mixObject);
 
