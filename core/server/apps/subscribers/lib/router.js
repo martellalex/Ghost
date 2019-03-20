@@ -32,16 +32,13 @@ function _renderer(req, res) {
 }
 
 //hack to include mixpanel tracking
-function mixpanelTracking(distinctId, email, cohortWeek){
-    mixpanel.track('subscribe',{
-        'distinct_id': distinctId,
-        'email' : email,
-        'cohortWeek' : cohortWeek
-    });
+function mixpanelTracking(mixObj){
 
-    mixpanel.people.set( distinctId, {
-        $name : email,
-        $email : email
+    mixpanel.track('subscribe',mixObj);
+
+    mixpanel.people.set( mixObj['distinct_id'], {
+        $name : mixObj['email'],
+        $email : mixObj['email']
     })
 }
 
@@ -96,13 +93,18 @@ function handleSource(req, res, next) {
 function storeSubscriber(req, res, next) {
     req.body.status = 'subscribed';
 
-    //extract json elements with a specific key prefix
-    //remove prefix from key names
-    //pass object to mixpanel
+    var mixObject = {}
 
-    console.log(req.body);
+    for (var key in req.body){
+      if(req.body.hasOwnProperty(key)){
+        if (key.indexOf('mix_') >= 0){
+          keyName = key.split('mix_')[1];
+          mixObject[keyName] = req.body[key];
+        }
+      }
+    }    
 
-    mixpanelTracking(req.body.mixpanelId,req.body.email,req.body.cohortWeek);
+    mixpanelTracking(mixObject);
 
     const api = require('../../../api')[res.locals.apiVersion];
 
