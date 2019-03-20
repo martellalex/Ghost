@@ -38,8 +38,6 @@ function mixpanelTracking(mixObj){
     var objEmail = mixObj['email'];
     var distinctId = mixObj['distinct_id'];
 
-    console.log(objEmail+' / '+distinctId);
-
     mixpanel.people.set(distinctId, {
         $name : objEmail,
         $email : objEmail
@@ -109,8 +107,6 @@ function storeSubscriber(req, res, next) {
     }    
 
     mixObject['email'] = req.body.email;
-
-    console.log(mixObject);
 
     mixpanelTracking(mixObject);
 
