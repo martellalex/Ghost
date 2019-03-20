@@ -2,6 +2,7 @@ var Mixpanel = require('mixpanel');
 var mixpanel = Mixpanel.init('78a9896c5fb212fe3f4841ad7dd5a428',{
     protocol:'https'
 });
+var __ = require('underscore');
 
 const path = require('path'),
     _ = require('lodash'),
@@ -94,6 +95,10 @@ function handleSource(req, res, next) {
 
 function storeSubscriber(req, res, next) {
     req.body.status = 'subscribed';
+
+    //extract json elements with a specific key prefix
+    //remove prefix from key names
+    //pass object to mixpanel
 
     console.log(req.body);
 
