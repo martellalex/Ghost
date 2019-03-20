@@ -35,7 +35,9 @@ function mixpanelTracking(mixObj){
 
     mixpanel.track('subscribe',mixObj);
 
-    var objEmail = mixObj[email];
+    console.log(mixObj)
+
+    var objEmail = mixObj['email'];
 
     mixpanel.people.set(mixObj[distinct_id], {
         $name : objEmail,
@@ -106,6 +108,8 @@ function storeSubscriber(req, res, next) {
     }    
 
     mixObject['email'] = req.body.email;
+
+    console.log(mixObject);
 
     mixpanelTracking(mixObject);
 
