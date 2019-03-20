@@ -95,8 +95,6 @@ function handleSource(req, res, next) {
 function storeSubscriber(req, res, next) {
     req.body.status = 'subscribed';
 
-    console.log(req.body);
-
     mixpanelTracking(req.body.mixpanelId,req.body.email,req.body.cohortWeek);
 
     const api = require('../../../api')[res.locals.apiVersion];
