@@ -94,7 +94,8 @@ function handleSource(req, res, next) {
 function storeSubscriber(req, res, next) {
     req.body.status = 'subscribed';
 
-    var mixObject = {'email':req.body.email}
+    var mixObject = {};
+    mixObject[email] = req.body.email;
 
     for (var key in req.body){
       if(req.body.hasOwnProperty(key)){
