@@ -2,7 +2,6 @@ var Mixpanel = require('mixpanel');
 var mixpanel = Mixpanel.init('78a9896c5fb212fe3f4841ad7dd5a428',{
     protocol:'https'
 });
-var __ = require('underscore');
 
 const path = require('path'),
     _ = require('lodash'),
@@ -36,9 +35,9 @@ function mixpanelTracking(mixObj){
 
     mixpanel.track('subscribe',mixObj);
 
-    mixpanel.people.set( mixObj['distinct_id'], {
-        $name : mixObj['email'],
-        $email : mixObj['email']
+    mixpanel.people.set( mixObj.distinct_id, {
+        $name : mixObj.email,
+        $email : mixObj.email
     })
 }
 
