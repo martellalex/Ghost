@@ -31,11 +31,17 @@ module.exports = function setupSiteApp(options = {}) {
     siteApp.set('view engine', 'hbs');
 
     //enable cors
-    siteApp.use(function(req, res, next) {
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-      next();
-    });    
+    siteApp.all('*',function(req,res,next){
+        if(!req.get('Origin')) return next();
+
+        res.set('Access-Control-Allow-Origin','*');
+        res.set('Access-Control-Allow-Methods','GET,POST');
+        res.set('Access-Control-Allow-Headers','X-Requested-With,Content-Type');
+
+        if ('OPTIONS' == req.method) return res.send(200);
+
+        next();
+    });
 
     // you can extend Ghost with a custom redirects file
     // see https://github.com/TryGhost/Ghost/issues/7707
