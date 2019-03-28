@@ -30,7 +30,7 @@ module.exports = function setupSiteApp(options = {}) {
     // set the view engine
     siteApp.set('view engine', 'hbs');
 
-    //enable cors
+    //enable cors (BAM EDIT)
     siteApp.all('*',function(req,res,next){
         if(!req.get('Origin')) return next();
 
